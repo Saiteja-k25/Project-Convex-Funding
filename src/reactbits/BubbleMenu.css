@@ -1,0 +1,312 @@
+/* BubbleMenu — React Bits, vendored. Mobile navigation only.
+   Bubbles and pills re-pointed at the Convex tokens; the demo's per-item
+   rainbow (blue/green/amber/red/purple) is replaced by brand greens in the
+   items data, so five links no longer look like five different companies. */
+
+.bubble-menu {
+  left: 0;
+  right: 0;
+  top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 1.25rem;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.bubble-menu.fixed { position: fixed; }
+
+/* Removing the white pill left the lockup sitting straight on the globe, which
+   is bright in places. A short top scrim gives it something to sit on without
+   reintroducing a chip — the same approach the desktop header uses. */
+.bubble-menu::before {
+  content: '';
+  position: absolute;
+  inset: -1.25rem 0 auto 0;
+  height: 116px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(7, 11, 17, 0.82) 0%,
+    rgba(7, 11, 17, 0.42) 56%,
+    rgba(7, 11, 17, 0) 100%
+  );
+}
+
+/* While the menu is open the panel provides its own ground. */
+.bubble-menu:has(.menu-btn.open)::before {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.bubble-menu.absolute { position: absolute; }
+
+.bubble-menu .bubble {
+  --bubble-size: 48px;
+  width: var(--bubble-size);
+  height: var(--bubble-size);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.bubble-menu .logo-bubble,
+.bubble-menu .toggle-bubble { will-change: transform; }
+
+/* No pill behind the lockup. It sits bare on the footage, so it drops the
+   horizontal padding, the radius and the drop shadow — all three existed only to
+   lift a white chip off the background. Legibility comes from the header scrim
+   instead. */
+.bubble-menu .logo-bubble {
+  width: auto;
+  min-height: var(--bubble-size);
+  height: var(--bubble-size);
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  gap: 9px;
+}
+
+/* Glass button. The white fill is gone, so the ring and the blur are what make it
+   read as a control rather than three lines floating on the globe. The blur also
+   keeps the lines legible when a bright part of the footage passes underneath. */
+.bubble-menu .toggle-bubble {
+  width: var(--bubble-size);
+  height: var(--bubble-size);
+  border: 1px solid rgba(247, 249, 248, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(7, 11, 17, 0.4);
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.bubble-menu .toggle-bubble:active {
+  border-color: rgba(52, 200, 138, 0.6);
+}
+
+.bubble-menu .bubble-logo { max-height: 62%; max-width: 100%; object-fit: contain; display: block; }
+
+.bubble-menu .logo-content {
+  --logo-max-height: 78%;
+  --logo-max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 100%;
+}
+
+.bubble-menu .logo-content > .bubble-logo,
+.bubble-menu .logo-content > img,
+.bubble-menu .logo-content > svg {
+  max-height: var(--logo-max-height);
+  max-width: var(--logo-max-width);
+}
+
+/* Opts out of the logo-content max-height cap: the SVG already knows its size,
+   and capping height while its width attribute stays fixed would distort it. */
+.bubble-menu .bubble-logo-mark {
+  display: block;
+  flex: 0 0 auto;
+  max-height: none;
+  max-width: none;
+}
+
+.bubble-menu .logo-word {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.bubble-menu .logo-word b {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  /* Paper, not ink — the ground is dark footage now, not a white pill. */
+  color: var(--paper);
+}
+
+.bubble-menu .logo-word i {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  line-height: 1;
+  /* Mint on dark. The deeper teal was chosen for a paper ground and would
+     disappear against the footage. */
+  color: var(--mint);
+}
+
+.bubble-menu .menu-btn {
+  /* Border and background both come from .toggle-bubble / the inline props now —
+     `var(--paper)` here was the old white fill. */
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.bubble-menu .menu-line {
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+
+.bubble-menu .menu-line + .menu-line { margin-top: 6px; }
+.bubble-menu .menu-btn.open .menu-line:first-child { transform: translateY(4px) rotate(45deg); }
+.bubble-menu .menu-btn.open .menu-line:last-child { transform: translateY(-4px) rotate(-45deg); }
+
+.bubble-menu-items {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 99;
+}
+
+.bubble-menu-items.fixed { position: fixed; }
+.bubble-menu-items.absolute { position: absolute; }
+
+/* Full-bleed ink scrim, so the pills read against the moving footage instead of
+   floating over it. Upstream has no backdrop at all. */
+.bubble-menu-items::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 11, 17, 0.94);
+  pointer-events: auto;
+}
+
+.bubble-menu-items .pill-list {
+  position: relative;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  row-gap: 4px;
+  width: 100%;
+  max-width: 1600px;
+  pointer-events: auto;
+  justify-content: stretch;
+}
+
+.bubble-menu-items .pill-list .pill-col {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex: 0 0 calc(100% / 3);
+  box-sizing: border-box;
+}
+
+.bubble-menu-items .pill-link {
+  --pill-bg: var(--paper);
+  --pill-color: #070b11;
+  --item-rot: 0deg;
+  --pill-min-h: 160px;
+  --hover-bg: #22b573;
+  --hover-color: #06231a;
+  width: 100%;
+  min-height: var(--pill-min-h);
+  padding: clamp(1.5rem, 3vw, 8rem) 0;
+  font-size: clamp(1.5rem, 4vw, 4rem);
+  font-weight: 600;
+  line-height: 0;
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--pill-color);
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background 0.3s ease, color 0.3s ease;
+  will-change: transform;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 10px;
+}
+
+.bubble-menu-items .pill-link .pill-label {
+  display: inline-block;
+  will-change: transform, opacity;
+  height: 1.2em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 900px) {
+  .bubble-menu-items .pill-link { transform: rotate(var(--item-rot)); }
+  .bubble-menu-items .pill-link:hover {
+    transform: rotate(var(--item-rot)) scale(1.06);
+    background: var(--hover-bg);
+    color: var(--hover-color);
+  }
+  .bubble-menu-items .pill-link:active { transform: rotate(var(--item-rot)) scale(0.94); }
+}
+
+/* Phones: the menu owns the WHOLE screen and the pills share its height.
+   Upstream anchors the list to the top with a fixed 108px offset, which on a
+   844px phone left roughly 45% of the screen as dead space below the last pill. */
+@media (max-width: 899px) {
+  .bubble-menu-items {
+    align-items: stretch;
+    /* Top pad clears the logo bubble and the close button. */
+    padding: 92px 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .bubble-menu-items .pill-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 100%;
+    gap: 12px;
+    row-gap: 12px;
+    padding: 0;
+  }
+
+  /* flex: 1 1 0 on both the column and the link is what distributes the pills
+     evenly down the full height instead of stacking them at the top. */
+  .bubble-menu-items .pill-list .pill-col {
+    flex: 1 1 0;
+    margin-left: 0 !important;
+    overflow: visible;
+  }
+
+  .bubble-menu-items .pill-link {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    line-height: 1.2;
+    font-size: clamp(1.35rem, 6vw, 1.9rem);
+    font-weight: 600;
+  }
+
+  .bubble-menu-items .pill-link:active {
+    transform: scale(0.97);
+    background: var(--hover-bg);
+    color: var(--hover-color);
+  }
+}

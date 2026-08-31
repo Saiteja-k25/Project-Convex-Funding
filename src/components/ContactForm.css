@@ -1,0 +1,285 @@
+/* ---------------------------------------------------------------------------
+   Contact form
+
+   Same tokens as everything else. Inputs are flat panels on the raised ink with
+   a hairline, so they read as fields without a heavy chrome border fighting the
+   dark ground.
+--------------------------------------------------------------------------- */
+
+.cform {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 760px;
+}
+
+.cform__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.cform__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.cform__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.cform__label span[aria-hidden] {
+  color: var(--green);
+}
+
+.cform__optional {
+  margin-left: 0.5rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  text-transform: none;
+}
+
+.cform__input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  background: var(--ink-raised);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.45;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  /* Safari gives inputs its own rounded chrome and an inner shadow. */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.cform__input::placeholder {
+  color: var(--muted);
+}
+
+.cform__input:hover {
+  border-color: rgba(247, 249, 248, 0.18);
+}
+
+.cform__input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34, 181, 115, 0.16);
+}
+
+.cform__input--bad,
+.cform__input--bad:hover {
+  border-color: #e2564d;
+}
+
+.cform__input--bad:focus {
+  border-color: #e2564d;
+  box-shadow: 0 0 0 3px rgba(226, 86, 77, 0.18);
+}
+
+.cform__textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* The arrow has to be drawn here: `appearance: none` above removes the native
+   one, which is what stops Safari rendering its own pill-shaped select. */
+.cform__select {
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted-bright) 50%),
+    linear-gradient(135deg, var(--muted-bright) 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(50% + 2px), calc(100% - 15px) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.75rem;
+  cursor: pointer;
+}
+
+.cform__select option {
+  background: var(--ink-raised);
+  color: var(--paper);
+}
+
+.cform__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 1.1rem;
+}
+
+.cform__count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.cform__err {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #f08b84;
+}
+
+/* --- consent --- */
+
+.cform__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--lede);
+  cursor: pointer;
+}
+
+.cform__consent input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.15rem;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+.cform__consent--bad {
+  color: #f08b84;
+}
+
+/* --- honeypot ---
+   Off-canvas rather than `display: none`: a bot that skips undisplayed fields
+   still fills this one, which is the entire point of it. */
+.cform__pot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* --- actions and status --- */
+
+.cform__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+}
+
+.cform__submit {
+  min-width: 220px;
+}
+
+.cform__submit[disabled] {
+  opacity: 0.62;
+  cursor: progress;
+}
+
+.cform__status:empty {
+  display: none;
+}
+
+.cform__statusText {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--lede);
+}
+
+.cform__statusText--bad {
+  color: #f08b84;
+}
+
+.cform__statusText a {
+  color: var(--mint);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(52, 200, 138, 0.4);
+}
+
+.cform__statusText a:hover {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+/* --- sent --- */
+
+.cform__done {
+  max-width: 560px;
+  padding: 2.25rem;
+  border: 1px solid rgba(52, 200, 138, 0.34);
+  border-radius: 4px;
+  background: linear-gradient(158deg, rgba(34, 181, 115, 0.08) 0%, rgba(12, 19, 28, 0.9) 62%);
+}
+
+.cform__doneTitle {
+  margin: 0 0 0.85rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--paper);
+}
+
+.cform__doneBody {
+  margin: 0 0 1.5rem 0;
+  font-size: 1rem;
+  line-height: 1.62;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+.cform__again {
+  padding: 0.7rem 1.1rem;
+  border: 1px solid rgba(247, 249, 248, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.22s ease, color 0.22s ease;
+}
+
+.cform__again:hover {
+  border-color: var(--green);
+  color: var(--mint);
+}
+
+.cform__again:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+--------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .cform__row {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .cform__submit {
+    width: 100%;
+  }
+}
+
+/* Stops iOS Safari zooming the whole page when a field takes focus. It does that
+   for anything under 16px, and the zoom does not undo itself on blur. */
+@media (max-width: 480px) {
+  .cform__input {
+    font-size: 16px;
+  }
+}

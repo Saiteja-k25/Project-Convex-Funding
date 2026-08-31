@@ -1,0 +1,139 @@
+/* ---------------------------------------------------------------------------
+   Convex Funding — design tokens
+   Palette lifted from the logo mark: navy bars, deep teal wordmark,
+   signal-green convex curve.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* surfaces */
+  --ink: #070b11;
+  --ink-raised: #0c131c;
+  --navy: #12314f;
+  --teal: #0b4f4a;
+
+  /* accent — one hue family, used sparingly */
+  --green: #22b573;
+  --mint: #34c88a;
+
+  /* text */
+  --paper: #f7f9f8;
+  --muted-bright: #8fa0ac;
+  --muted: #62727e;
+  /* Text sitting on footage needs more contrast than text on a flat panel.
+     --lede and --label are the on-footage pair; --muted stays for flat UI. */
+  --lede: #b6c3cc;
+  --label: #a9b7c2;
+
+  --hairline: rgba(247, 249, 248, 0.09);
+
+  /* type — display serif for headlines, sans for body, mono for data labels */
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Palatino, Georgia, serif;
+  --font-sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* rhythm */
+  --gutter: clamp(1.75rem, 5vw, 4.5rem);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--mint);
+}
+
+a:hover {
+  color: var(--green);
+}
+
+button {
+  font: inherit;
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll stage
+--------------------------------------------------------------------------- */
+
+.scroll-container {
+  position: relative;
+  width: 100%;
+}
+
+.sticky-canvas {
+  position: sticky;
+  top: 0;
+  display: block;
+  /* 100%, NOT 100vw. 100vw includes the scrollbar gutter, so on any page with a
+     vertical scrollbar the canvas is wider than the content box and the whole
+     document scrolls sideways by the scrollbar width. */
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* Cursor-trail layer. Fixed to the viewport and sandwiched between the footage
+   and the copy, so the trail composites over the frames but under the text. */
+.stage-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll lock (entry reveal, open menu)
+
+   `touch-action: none` is the load-bearing line: it blocks the pan gesture
+   itself, which is the only thing that stops a finger drag. Lenis cannot do it
+   because it does not handle touch by default.
+
+   `overflow: hidden` is scoped to touch pointers on purpose. On desktop it would
+   remove the scrollbar and shift every fixed element sideways by its width the
+   moment the menu opened. Touch has no scrollbar, so there is nothing to shift.
+--------------------------------------------------------------------------- */
+
+html[data-scroll-locked] {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+@media (hover: none) {
+  html[data-scroll-locked],
+  html[data-scroll-locked] body {
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay__phase,
+  .preloader,
+  .preloader__enter,
+  .btn,
+  .btn__icon,
+  .btn__icon svg {
+    transition-duration: 0.01ms !important;
+  }
+}

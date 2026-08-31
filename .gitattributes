@@ -1,0 +1,15 @@
+# Normalise line endings in the repository. Committed as LF, checked out native.
+* text=auto
+
+# Cloudflare Pages parses these line by line. Pin them to LF so a Windows
+# checkout can never hand the parser CRLF.
+/public/_redirects text eol=lf
+/public/_headers   text eol=lf
+/.nvmrc            text eol=lf
+
+# Binary — never touch these.
+*.webp binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.mp4  binary

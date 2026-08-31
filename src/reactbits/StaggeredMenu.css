@@ -1,0 +1,277 @@
+/* StaggeredMenu — React Bits, vendored. Palette and type re-pointed at the
+   Convex tokens; structure and animation hooks left as upstream so the
+   component source stays swappable.
+
+   The panel is deliberately PAPER on a near-black site. That hard flash of
+   light is the effect — a dark panel on a dark page reads as nothing. */
+
+.staggered-menu-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.staggered-menu-wrapper.fixed-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Not 100vw — see the note on .sticky-canvas in index.css. */
+  width: 100%;
+  height: 100vh;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.staggered-menu-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.6rem var(--gutter);
+  background: transparent;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.staggered-menu-header > * { pointer-events: auto; }
+
+.sm-logo { display: flex; align-items: center; gap: 11px; user-select: none; }
+
+/* The mark is an inline SVG now and sizes itself from its `height` prop, so it
+   must NOT inherit the raster rules below — a CSS height with a fixed width
+   attribute would distort it. */
+.sm-logo-mark {
+  display: block;
+  flex: 0 0 auto;
+}
+
+/* `.sm-logo-img` removed with the raster fallback it styled — see the LOGO SLOT
+   comment in StaggeredMenu.jsx. The mark is `.sm-logo-mark` above, an inline SVG
+   that sizes itself. */
+
+.sm-logo-word { display: flex; flex-direction: column; gap: 2px; }
+
+.sm-logo-word b {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  line-height: 1;
+  color: var(--paper);
+}
+
+.sm-logo-word i {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  line-height: 1;
+  color: var(--green);
+}
+
+.staggered-menu-wrapper[data-open] .sm-logo-word b { color: var(--paper); }
+
+.sm-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  overflow: visible;
+}
+
+.sm-toggle:focus-visible { outline: 2px solid var(--green); outline-offset: 6px; border-radius: 2px; }
+
+.sm-toggle-textWrap {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  white-space: nowrap;
+  width: var(--sm-toggle-width, auto);
+  min-width: var(--sm-toggle-width, auto);
+}
+
+.sm-toggle-textInner { display: flex; flex-direction: column; line-height: 1; }
+.sm-toggle-line { display: block; height: 1em; line-height: 1; }
+
+.sm-icon {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.sm-icon-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1; }
+.sm-line { display: none !important; }
+
+.staggered-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(300px, 42vw, 520px);
+  height: 100%;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  padding: 6.5rem 3rem 2.5rem 3rem;
+  overflow-y: auto;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+}
+
+[data-position='left'] .staggered-menu-panel { right: auto; left: 0; }
+
+.sm-prelayers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(300px, 42vw, 520px);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+}
+
+[data-position='left'] .sm-prelayers { right: auto; left: 0; }
+
+.sm-prelayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  transform: translateX(0);
+  opacity: 0;
+}
+
+.sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.sm-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sm-panel-item {
+  position: relative;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  cursor: pointer;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  transition: color 0.25s;
+  display: inline-block;
+  text-decoration: none;
+  padding-right: 1.4em;
+}
+
+.sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
+.sm-panel-item:hover { color: var(--sm-accent, #22b573); }
+
+.sm-panel-list[data-numbering] { counter-reset: smItem; }
+
+.sm-panel-list[data-numbering] .sm-panel-item::after {
+  counter-increment: smItem;
+  content: counter(smItem, decimal-leading-zero);
+  position: absolute;
+  top: 0.15em;
+  right: 0.4em;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sm-accent, #22b573);
+  letter-spacing: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--sm-num-opacity, 0);
+}
+
+.sm-socials { margin-top: auto; padding-top: 2rem; display: flex; flex-direction: column; gap: 0.9rem; }
+
+.sm-socials-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.sm-socials-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.sm-socials-link {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  position: relative;
+  padding: 2px 0;
+  display: inline-block;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.sm-socials-link:hover { color: var(--green); }
+.sm-socials-link:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
+.staggered-menu-panel .sm-socials-list .sm-socials-link { opacity: 1; transition: opacity 0.3s ease; }
+.staggered-menu-panel .sm-socials-list:hover .sm-socials-link:not(:hover) { opacity: 0.35; }
+.staggered-menu-panel .sm-socials-list:focus-within .sm-socials-link:not(:focus-visible) { opacity: 0.35; }
+.staggered-menu-panel .sm-socials-list .sm-socials-link:hover,
+.staggered-menu-panel .sm-socials-list .sm-socials-link:focus-visible { opacity: 1; }
+
+/* A pending social has no URL yet, so it is shown as inert rather than linked
+   to nothing. */
+.sm-socials-pending { color: var(--muted); cursor: default; font-size: 1rem; font-weight: 500; }
+
+@media (max-width: 1024px) {
+  .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 6rem 2rem 2rem 2rem; }
+  .sm-prelayers { width: 100%; }
+}

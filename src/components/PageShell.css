@@ -1,0 +1,646 @@
+/* ---------------------------------------------------------------------------
+   Content routes — /about, /how-convex-works
+
+   Same tokens as the landing page, flat ground instead of footage. Nothing here
+   touches the scroll stage, the canvas or the footer's panel logic.
+
+   `.page` carries NO horizontal padding. Each block applies its own, so the
+   statement band can run edge to edge without negative-margin tricks.
+--------------------------------------------------------------------------- */
+
+.page {
+  background: var(--ink);
+  padding: 7.5rem 0 5.5rem 0;
+  /* Contains the ElectricBorder canvas, which is deliberately 60px larger than
+     its card on every side (see ElectricBorder.css). Absolutely-positioned
+     descendants extend an ancestor's scrollable overflow, and this page must not
+     grow a horizontal scrollbar because of a decorative glow.
+
+     `clip`, not `hidden`: hidden on one axis forces the other axis to `auto`,
+     which would make this a scroll container and break any sticky descendant.
+     `clip` does neither. Pre-Safari-16 simply keeps the small overflow. */
+  overflow-x: clip;
+}
+
+/* --- back link (matches StubPage's convention) --- */
+
+.page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 var(--gutter) 3.25rem var(--gutter);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-bright);
+  text-decoration: none;
+  transition: color 0.22s ease;
+}
+
+.page__back:hover,
+.page__back:focus-visible {
+  color: var(--mint);
+}
+
+/* --- hero --- */
+
+.page__hero {
+  padding: 0 var(--gutter);
+  max-width: 1180px;
+}
+
+.page__eyebrow {
+  display: block;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.68rem, 0.78vw, 0.76rem);
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.page__title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.02;
+  color: var(--paper);
+  text-wrap: pretty;
+}
+
+.page__lede {
+  margin: 1.75rem 0 0 0;
+  max-width: 52ch;
+  font-size: clamp(1rem, 1.15vw, 1.08rem);
+  line-height: 1.62;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+/* --- sections --- */
+
+.page__section {
+  padding: 0 var(--gutter);
+  margin-top: 6rem;
+  max-width: 1180px;
+}
+
+.page__section--wide {
+  max-width: 1420px;
+}
+
+.page__sectionTitle {
+  margin: 0 0 2.25rem 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.68rem, 0.78vw, 0.76rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+/* The overview statement. Larger than body copy — it is the firm describing
+   itself, so it gets the weight of a pull quote rather than a paragraph. */
+.page__statement {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.7vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.008em;
+  color: var(--paper);
+  text-wrap: pretty;
+}
+
+.page__body {
+  margin: 1.5rem 0 0 0;
+  max-width: 56ch;
+  font-size: 1rem;
+  line-height: 1.68;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+/* --- statement band (full bleed) --- */
+
+.page__band {
+  position: relative;
+  margin-top: 7rem;
+  padding: clamp(4.5rem, 9vw, 8rem) var(--gutter);
+  text-align: center;
+  overflow: hidden;
+  /* Deep navy/teal, NOT the reference's saturated lime — see StatementBand in
+     PageShell.jsx for why. Green survives only as the hairline and the bloom. */
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(34, 181, 115, 0.16) 0%, transparent 58%),
+    linear-gradient(168deg, #0b1f33 0%, var(--teal) 54%, #05271f 100%);
+  border-top: 1px solid rgba(52, 200, 138, 0.3);
+  border-bottom: 1px solid rgba(52, 200, 138, 0.14);
+}
+
+.page__bandText {
+  position: relative;
+  margin: 0 auto;
+  max-width: 24ch;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.6vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.016em;
+  color: var(--paper);
+  text-wrap: pretty;
+}
+
+.page__bandAttr {
+  position: relative;
+  display: block;
+  margin-top: 2rem;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(247, 249, 248, 0.62);
+}
+
+/* --- metrics --- */
+
+.page-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+}
+
+.page-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 2rem 1.5rem;
+  background: var(--ink-raised);
+}
+
+.page-metric__label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.66rem, 0.76vw, 0.74rem);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.page-metric__value {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.page-metric__note {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* --- numbered steps --- */
+
+.page-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--hairline);
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.page-step {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: start;
+  padding: 2.5rem 0.5rem;
+  background: var(--ink);
+}
+
+.page-step__num {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--green);
+  padding-top: 0.4rem;
+}
+
+.page-step__title {
+  margin: 0 0 0.75rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.3vw, 1.95rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+}
+
+.page-step__body {
+  margin: 0;
+  max-width: 58ch;
+  font-size: 0.98rem;
+  line-height: 1.66;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+/* --- three-up qualities --- */
+
+.page-qualities {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.page-quality {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(52, 200, 138, 0.34);
+}
+
+.page-quality__title {
+  margin: 0 0 0.85rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.9vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--paper);
+}
+
+.page-quality__body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.62;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+/* --- leadership --- */
+
+.page-people {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Generous, because each card's glow escapes its box by ~40px and two cards
+     sitting close would bleed into one another. */
+  gap: clamp(2.75rem, 6vw, 5rem);
+  /* Keeps the outer bloom off the clip edge established by .page. */
+  padding: 1.25rem 0;
+}
+
+.person {
+  /* ElectricBorder applies its own border-radius inline; this only styles the
+     card that sits inside .eb-content. */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  border-radius: inherit;
+  background: linear-gradient(168deg, rgba(12, 19, 28, 0.96) 0%, rgba(7, 11, 17, 0.98) 100%);
+}
+
+.person__monogram {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1px solid rgba(52, 200, 138, 0.26);
+  background:
+    radial-gradient(circle at 32% 26%, rgba(52, 200, 138, 0.26) 0%, transparent 58%),
+    linear-gradient(158deg, var(--navy) 0%, var(--teal) 64%, #06231a 100%);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--paper);
+  user-select: none;
+}
+
+/* An open arc, echoing the swoosh in the logo mark rather than closing a second
+   ring around the monogram. */
+.person__monogram::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  border-top-color: var(--green);
+  border-right-color: rgba(34, 181, 115, 0.3);
+  transform: rotate(-28deg);
+}
+
+.person__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  color: var(--paper);
+}
+
+.person__role {
+  display: block;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+.person__location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--muted-bright);
+}
+
+.person__location svg {
+  flex: 0 0 auto;
+  color: var(--green);
+}
+
+/* --- facts --- */
+
+.page-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+}
+
+.page-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.75rem 1.5rem;
+  background: var(--ink-raised);
+  /* Emails and domains have no break opportunity — the same class of bug that
+     shifted the whole footer right. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.page-fact__label {
+  /* inline-flex so /contact can put an icon beside the label without it sitting
+     on its own baseline. Letter-spacing pushes the text right of the icon, so the
+     gap is deliberately tight to compensate. */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.page-fact__label svg {
+  flex: 0 0 auto;
+  color: var(--green);
+}
+
+.page-fact__value {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--paper);
+}
+
+.page-fact__value a {
+  color: var(--mint);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(52, 200, 138, 0.35);
+}
+
+.page-fact__value a:hover {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+/* --- closing CTA --- */
+
+.page__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 2.5rem;
+}
+
+/* --- motion ---------------------------------------------------------------
+
+   No GSAP and no ScrollTrigger on these routes. The landing page owns the
+   scroll architecture and nothing here should be able to disturb it.
+
+   The hero fades up on load, because it is above the fold and therefore actually
+   seen. Lower sections use a scroll-driven CSS view() timeline where the browser
+   supports it, which needs no JS at all; everywhere else they are simply already
+   visible. A plain load animation was rejected for those — it would run while the
+   section was still far below the fold and be over before anyone scrolled to it.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .page__hero {
+    animation: pageRise 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .page__section,
+    .page__band {
+      animation: pageRise linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 24%;
+    }
+  }
+}
+
+@keyframes pageRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+--------------------------------------------------------------------------- */
+
+@media (max-width: 992px) {
+  .page-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-qualities {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .page-people {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding-top: 6.5rem;
+  }
+
+  .page__section {
+    margin-top: 4.5rem;
+  }
+
+  .page__band {
+    margin-top: 5rem;
+  }
+
+  .page-step {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    padding: 2rem 0;
+  }
+
+  .page-step__num {
+    padding-top: 0;
+  }
+
+  .page-facts {
+    grid-template-columns: 1fr;
+  }
+
+  /* Full-width buttons stack rather than sit side by side at 360px. */
+  .page__cta .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .person__monogram {
+    width: 76px;
+    height: 76px;
+    font-size: 26px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Coming-soon block (/programs, /rules)
+
+   Reads as a deliberate status, not as an unfinished page. The chip carries the
+   state, the paragraph carries the reason.
+--------------------------------------------------------------------------- */
+
+.page-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.75rem;
+  max-width: 62ch;
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border: 1px solid rgba(52, 200, 138, 0.22);
+  border-left: 2px solid var(--green);
+  border-radius: 3px;
+  background: linear-gradient(148deg, rgba(34, 181, 115, 0.07) 0%, rgba(12, 19, 28, 0.72) 58%);
+}
+
+.page-soon__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(52, 200, 138, 0.34);
+  border-radius: 999px;
+  background: rgba(7, 11, 17, 0.5);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+.page-soon__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(34, 181, 115, 0.55);
+  /* Ungated, like the leadership borders: Saiteja's machine reports reduced
+     motion (Windows animation settings off), and a "being written" chip that
+     never breathes is exactly the still-image problem he flagged there. It is a
+     6px dot, so the accessibility cost of leaving it running is about as small as
+     autonomous motion gets. */
+  animation: soonPulse 2.4s ease-out infinite;
+}
+
+@keyframes soonPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 181, 115, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(34, 181, 115, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 181, 115, 0);
+  }
+}
+
+.page-soon__detail {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.68;
+  color: var(--lede);
+  text-wrap: pretty;
+}
+
+.page-soon__reach {
+  margin: 1.75rem 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--muted-bright);
+}
+
+.page-soon__reach a {
+  color: var(--mint);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(52, 200, 138, 0.35);
+}
+
+.page-soon__reach a:hover {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}

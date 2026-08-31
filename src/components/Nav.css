@@ -1,0 +1,111 @@
+/* Nav-level overrides. The two menu components own their own styling; this file
+   only handles how they sit on THIS page. */
+
+/* The fixed wrapper spans the viewport so the panel can slide across it. It must
+   stay click-through, or it would swallow every interaction with the stage
+   underneath — the header children and the panel re-enable pointer events
+   themselves (see StaggeredMenu.css). */
+.convex-menu.fixed-wrapper {
+  pointer-events: none;
+}
+
+/* Sits under the entry reveal (200) and above the stage copy (3). */
+.convex-menu {
+  z-index: 100;
+}
+
+/* The header is fixed, so it rides over whatever is beneath it — in the footer
+   it landed straight on top of the "How Convex works" column. A short scrim
+   gives the lockup and the Menu button something to sit on without introducing a
+   solid bar that would fight the full-bleed footage in the hero. */
+.convex-menu .staggered-menu-header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 132px;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgba(7, 11, 17, 0.82) 0%,
+    rgba(7, 11, 17, 0.45) 52%,
+    rgba(7, 11, 17, 0) 100%
+  );
+}
+
+/* While the panel is open the scrim would show through the paper panel edge. */
+.convex-menu[data-open] .staggered-menu-header::before {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* ---------------------------------------------------------------------------
+   Lockup as a home link
+
+   The mark and the wordmark used to be siblings inside `.sm-logo` (desktop) and
+   `.logo-content` (phone), which is where their flex layout and gap came from.
+   They are wrapped in an anchor now, so the anchor is those containers' ONLY
+   child and has to reproduce that layout itself — without this the mark and the
+   words close up against each other.
+
+   It also has to undo the two things applied to every <a>: the UA underline, and
+   `color: var(--mint)` from index.css. Every part of the lockup sets its own
+   colour explicitly, so the colour rule changes nothing visible today, but
+   inheriting it would quietly break the day any of them switches to
+   currentColor.
+--------------------------------------------------------------------------- */
+
+.nav-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px; /* was .sm-logo's gap */
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  /* No grey flash box on tap. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Nothing about the lockup changes on hover — it is a wordmark that happens to
+   be clickable, the same reasoning as the footer credit pill. Without this the
+   global `a:hover` would tint it green. */
+.nav-home:hover,
+.nav-home:focus {
+  color: inherit;
+}
+
+.nav-home:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 6px;
+  border-radius: 3px;
+}
+
+/* Phone lockup sat in `.logo-content`, which supplied gap 9px. */
+.nav-home--bubble {
+  gap: 9px;
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Menu socials — spread to the panel edges
+
+   Upstream packs the three links together with a fixed 1.25rem gap, which left
+   them bunched at the left of a 424px column with ~170px of dead space to the
+   right of WhatsApp. Measured: labels occupy 213px of 424px.
+
+   `space-between` distributes that slack instead. `gap` stays as a MINIMUM so
+   the row still reads correctly if it ever wraps (a longer label, a fourth
+   network) rather than collapsing to zero spacing.
+--------------------------------------------------------------------------- */
+
+.convex-menu .sm-socials-list {
+  justify-content: space-between;
+  gap: 1rem 1.25rem;
+  /* Cap the spread.
+     Below 1024px the panel goes full-bleed, and space-between across the whole
+     width put 304px between each label — measured at a 900px viewport, list 821px
+     wide. That reads as three disconnected items rather than one row of socials.
+     460px keeps the gaps close to the desktop panel's own (~105px at a 424px
+     list), so the group holds together at every width. */
+  max-width: 460px;
+}

@@ -1,0 +1,23 @@
+# Cloudflare Pages response headers.
+#
+# The frame sequences are 270 WebP files totalling ~18MB and they are the single
+# biggest cost of visiting this site. Unlike /assets/*, their filenames are NOT
+# content-hashed by Vite — frame_000.webp is always frame_000.webp — so without
+# an explicit rule they fall back to a short default cache and a returning
+# visitor re-downloads the whole film.
+#
+# 30 days rather than a year with `immutable`: these names are stable, so if the
+# sequence is ever re-exported the same URL would serve different bytes.
+# `immutable` tells the browser never to revalidate, which would strand people on
+# the old frames. 30 days gets nearly all of the benefit and stays fixable — and
+# a Cloudflare cache purge handles the edge.
+/sequence-desktop/*
+  Cache-Control: public, max-age=2592000
+
+/sequence-mobile/*
+  Cache-Control: public, max-age=2592000
+
+# Vite fingerprints these, so the filename changes whenever the contents do.
+# Safe to cache forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

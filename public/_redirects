@@ -1,0 +1,29 @@
+# Cloudflare Pages SPA fallback.
+#
+# THIS FILE IS THE DIFFERENCE BETWEEN A WORKING SITE AND A BROKEN ONE.
+#
+# The app is a single-page React Router build: only `/index.html` physically
+# exists. Every other route — /about, /contact, /programs, /rules, /faq,
+# /how-convex-works, /legal/* — is created by JavaScript after index.html loads.
+#
+# Without this rule a static host looks for a real file at those paths, does not
+# find one, and returns 404. That is fine while you click around inside the app,
+# because the router never asks the server. It breaks the moment anyone hard
+# refreshes, opens a link in a new tab, or arrives from a shared URL — which is
+# every legal link in the footer.
+#
+# Measured before this file existed, serving dist/ with a plain static server:
+#   /                  200
+#   /contact           404
+#   /legal/terms       404
+#   /legal/privacy     404
+#   /legal/risk        404
+#
+# The 200 (not 302) is what matters: it serves index.html AT the requested URL
+# rather than redirecting, so the router still sees /contact and renders the
+# right page, and search engines see a real page rather than a redirect chain.
+#
+# Real files always win over this rule, so /sequence-desktop/frame_000.webp and
+# /assets/* are unaffected.
+
+/*    /index.html   200

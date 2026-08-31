@@ -1,0 +1,620 @@
+/* ---------------------------------------------------------------------------
+   Footer reveal — one rising panel.
+
+   The container supplies the SCROLL LENGTH (set inline). Inside it a sticky stage
+   holds the single panel absolutely positioned; GSAP scrubs it from yPercent 100
+   to 0 so it rises from the bottom and covers the hero.
+
+   Sticky rather than GSAP `pin` — see the note at the top of Footer.jsx.
+--------------------------------------------------------------------------- */
+
+.footer-reveal {
+  position: relative;
+  z-index: 4; /* above the hero's sticky canvas (z1) and its overlay (z3) */
+  width: 100%;
+  /* height is set inline: 100svh + one beat */
+}
+
+.footer-reveal__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden; /* clips the panel while it is still below the fold */
+
+  /* Brand gradient, NOT footage.
+     
+     The footage version held the sequence's final frame — which IS the CONVEX
+     FUNDING sign — so the ending read: hero closes on the sign, the footer rises
+     over the same sign, then the footer's own giant wordmark. Three times.
+     Flat ink was the other extreme and read as an empty hole.
+     
+     A dark wash carrying the convex curve's green gives depth without repeating
+     anything, and drops a 78KB image request from the footer. */
+  background-color: var(--ink);
+  background-image:
+    radial-gradient(
+      ellipse 120% 80% at 50% 118%,
+      rgba(34, 181, 115, 0.16) 0%,
+      rgba(11, 79, 74, 0.09) 42%,
+      rgba(7, 11, 17, 0) 74%
+    ),
+    radial-gradient(
+      ellipse 90% 60% at 50% -10%,
+      rgba(18, 49, 79, 0.35) 0%,
+      rgba(7, 11, 17, 0) 70%
+    );
+}
+
+/* One panel, and it has to EARN its viewport. `space-between` drives the columns
+   to the top and the sign-off to the bottom trim, so the height is used rather
+   than leaving 69% of the frame empty with the content stranded in the middle. */
+.footer-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  /* NOT space-between. With the columns stretched, that pushed the sign-off to
+     the trim and left a hole mid-panel. The sign-off pins itself instead (see
+     .footer__signoff margin-top) so only ONE gap exists, between the link block
+     and the sign-off — which is ordinary footer anatomy. */
+  justify-content: flex-start;
+  padding: clamp(3.5rem, 7vh, 6rem) var(--gutter) clamp(1.5rem, 3vh, 2.5rem);
+  background: var(--ink);
+  border-top: 1px solid var(--hairline);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* --- socials ---
+   Previously a full-width "FOLLOW CONVEX FUNDING" bar across the top of the
+   footer. Removed: it spent a whole band on two icons, and duplicated the
+   LinkedIn text link that sat in the Company column. */
+
+.footer__socials {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer__social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  color: var(--muted-bright);
+  transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.footer__social:hover {
+  color: var(--paper);
+  border-color: var(--green);
+  background: rgba(34, 181, 115, 0.1);
+}
+
+/* Same 40px square as a real social button, just muted and inert — it holds the
+   mark's place in the set rather than shrinking to a text chip. */
+.footer__social--pending {
+  color: var(--muted);
+  cursor: default;
+  border-style: dashed;
+}
+
+/* Icon and text on one baseline. Was uppercase tracked-out mono, which read as a
+   label rather than an address and wrapped awkwardly at 18ch. */
+.footer__location {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 1rem 0 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-style: normal;
+  letter-spacing: 0.005em;
+  line-height: 1.45;
+  color: var(--muted-bright);
+}
+
+.footer__location svg {
+  flex: 0 0 auto;
+  /* Nudged down so the pin sits on the text's optical centre, not its cap line. */
+  margin-top: 0.12em;
+  color: var(--green);
+}
+
+/* Inside the disclosure paragraph, so it must not shout — same weight as the body
+   around it, distinguished only by colour and an underline on hover. */
+/* Same trap as .footer__link: `support@convexfunding.com` has no break
+   opportunity, so it widened the disclosure, which widened the grid, which
+   shifted the whole footer right. Fixed in .footer__link first and missed here. */
+.footer__inlineLink {
+  overflow-wrap: anywhere;
+  color: var(--muted-bright);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(143, 160, 172, 0.35);
+  transition: color 0.22s ease, border-color 0.22s ease;
+}
+
+.footer__inlineLink:hover {
+  color: var(--mint);
+  border-bottom-color: var(--mint);
+}
+
+/* --- columns + disclosure --- */
+
+.footer__main {
+  /* Does NOT grow. Growing stretched every .footer__col, and the socials — pinned
+     to their column's baseline by margin-top:auto — were shoved ~400px below the
+     last link, which is the hole in the desktop footer. */
+  flex: 0 0 auto;
+  align-content: start;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 1.35fr;
+  /* Row gap scales with viewport HEIGHT, column gap does not — see the note on
+     .footer__list. */
+  gap: clamp(2rem, 4vh, 4rem) 3rem;
+  padding: 0;
+}
+
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vh, 3rem);
+  /* Without this a flex item refuses to shrink past its content's min size, so a
+     single long string in one column widens the whole grid. */
+  min-width: 0;
+}
+
+/* Sits directly under its links. It used to carry `margin-top: auto` to pin it to
+   a stretched column's baseline; with the column no longer stretching, that would
+   now do nothing useful and previously did real harm. */
+.footer__follow {
+  margin-top: 0.5rem;
+}
+
+.footer__colTitle {
+  margin: 0 0 clamp(1rem, 3vh, 2.4rem) 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.footer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* vh, not rem.
+     
+     The panel is always exactly one viewport tall, but this rhythm was fixed in
+     rem — so on a tall screen the content stayed the same height and ALL the
+     extra space pooled into a single gap above the sign-off: measured 36% of the
+     panel at 1440x900 and 1900x930, and 30% on an 820x1180 tablet. Scaling the
+     rhythm with viewport height distributes that space through the content
+     instead of hoarding it in one place. */
+  gap: clamp(0.9rem, 2.6vh, 2.2rem);
+}
+
+.footer__link {
+  /* Grows with width as well, so a 1900px screen is not read at laptop size. */
+  font-size: clamp(0.95rem, 0.6vw + 0.5rem, 1.3rem);
+  font-weight: 500;
+
+  /* An email address has no natural break opportunity, so in a 157px mobile
+     column `support@convexfunding.com` overflowed by 28px — and because a grid
+     track cannot shrink below its content, that pushed footer__list, footer__col
+     and footer__main all 28px wide, which is what tipped the whole footer to the
+     right. `anywhere` lets it break mid-string; min-width:0 lets the flex/grid
+     parents actually shrink to their track. */
+  overflow-wrap: anywhere;
+  min-width: 0;
+  color: var(--muted-bright);
+  text-decoration: none;
+  transition: color 0.22s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.footer__link:hover { color: var(--paper); }
+
+/* A grid item defaults to min-width:auto, so it refuses to shrink below its
+   longest unbreakable word — which is how one email address widened the track. */
+.footer__disclosure {
+  min-width: 0;
+}
+
+.footer__disclosure h4 {
+  margin: 0 0 clamp(1rem, 2.4vh, 1.9rem) 0;
+  font-size: clamp(1rem, 0.35vw + 0.72rem, 1.22rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+}
+
+.footer__disclosure p {
+  margin: 0 0 clamp(0.8rem, 1.8vh, 1.5rem) 0;
+  font-size: clamp(0.82rem, 0.3vw + 0.62rem, 0.98rem);
+  line-height: 1.75;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.footer__disclosure p:last-child { margin-bottom: 0; }
+.footer__disclosure strong { color: var(--muted-bright); font-weight: 600; }
+
+/* A value the client still has to supply, shown rather than invented. */
+.footer__pending {
+  /* Placeholders like [LEGAL ENTITY NAME] become real strings later; do not let
+     a long one re-open the overflow this file just closed. */
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  color: var(--mint);
+  font-size: 0.78em;
+  letter-spacing: 0.04em;
+}
+
+/* --- wordmark sign-off --- */
+
+/* The one element that claims the leftover height, so the wordmark lands in the
+   bottom trim and everything above it stays as a single top-aligned block. */
+.footer__signoff {
+  width: 100%;
+  margin-top: auto;
+}
+
+.footer__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  /* Lifts the meta row clear of the wordmark. The panel is bottom-anchored, so
+     growing the gap below this row raises it while the wordmark stays in the
+     trim. Was 1.5rem, which left the row sitting on top of the caps. */
+  margin-bottom: clamp(2.25rem, 5vh, 4rem);
+}
+
+.footer__metaItem {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.footer__metaItem a { color: var(--muted); text-decoration: none; }
+.footer__metaItem a:hover { color: var(--mint); }
+
+/* --- credit byline ---
+   Deliberately carries no link affordances: no underline, no link colour, no
+   pointer-ish styling beyond the cursor. The name sits in solid pills so it
+   reads as a wordmark that happens to be clickable. */
+
+.footer__credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.footer__creditPrefix {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.25s ease;
+}
+
+.footer__creditWord {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Ink on green: a neutral-on-hue pair, so it stays crisp at 10.5px where a
+     dark green would go muddy — same reasoning as the CTA label. */
+  color: var(--ink);
+  background: var(--green);
+  border-radius: 999px;
+  padding: 0.34rem 0.75rem 0.3rem;
+  white-space: nowrap;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.footer__credit:hover .footer__creditPrefix { color: var(--muted-bright); }
+.footer__credit:hover .footer__creditWord { background: var(--mint); }
+
+.footer__credit:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+/* The measuring box. useFitText reads THIS width and sizes the span to match it
+   exactly, so the wordmark spans the column edge-to-edge on a phone, a tablet, a
+   laptop and an ultrawide alike.
+
+   The previous `clamp(2.5rem, 13.2vw, 15rem)` could only be correct at one
+   viewport width: vw scales with the screen, glyph widths scale with the type,
+   and the two agree at exactly one size. Everywhere else it overflowed — which is
+   why a wide monitor clipped it to "CONVEX FUNDI". */
+.footer__wordmarkBox {
+  width: 100%;
+  /* Establishes the container that `cqw` below resolves against. */
+  container-type: inline-size;
+  overflow: hidden; /* a sub-pixel rounding error must never scroll the page */
+  line-height: 0; /* the box hugs the glyphs; the span owns the leading */
+
+  /* Fallback coefficient, measured for Archivo 800 at -0.055em tracking. Correct
+     at EVERY width on its own — useFitText only refines it for the real webfont
+     metrics once, by overwriting this property. */
+  --wm-fit: 11.78cqw;
+}
+
+.footer__wordmark {
+  display: inline-block;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: var(--wm-fit); /* container-relative, so no resize listener is involved */
+  line-height: 0.82;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+  color: var(--paper);
+  white-space: nowrap; /* required — the fit measures a single line */
+  user-select: none;
+  margin-bottom: -0.14em; /* optical: sink the cap height into the trim */
+}
+
+.footer__wordmark span { color: var(--green); }
+
+@media (max-width: 992px) {
+  .footer__main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+  .footer__disclosure { grid-column: 1 / -1; }
+}
+
+/* Phones: the links panel has to fit ONE screen, because it is a panel now, not
+   a section that can scroll. Measured on a 375x667 phone, a single stacked
+   column came to 726px against a 667px viewport — 59px over, and a panel that
+   overflows is clipped, not scrollable.
+
+   Two-up fixes it: three short link groups plus the Follow row read fine side by
+   side, and it roughly halves the stack height. Gaps tightened to buy the rest. */
+@media (max-width: 767px) {
+  /* These were compacted hard to squeeze the footer into a viewport-height panel.
+     Phones no longer panelise, so there is nothing to fit and the spacing is
+     given back — a scrolling footer should breathe, not huddle. */
+  .footer-panel {
+    padding-top: 3rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .footer__main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+
+  .footer__col { gap: 1.5rem; }
+
+  /* There is no tall neighbour to align against once stacked, so the Follow
+     group sits directly under its links rather than being pushed to a baseline. */
+  .footer__follow { margin-top: 1rem; }
+
+  .footer__colTitle { margin-bottom: 1rem; }
+  .footer__list { gap: 0.85rem; }
+  .footer__link { font-size: 0.9rem; }
+
+  /* The disclosure is its own panel on phones, so it gets the full width. */
+  .footer__disclosure { grid-column: 1 / -1; }
+  /* A grid item defaults to min-width:auto, so it refuses to shrink below its
+   longest unbreakable word — which is how one email address widened the track. */
+.footer__disclosure {
+  min-width: 0;
+}
+
+.footer__disclosure h4 { margin-bottom: 1rem; font-size: 1rem; }
+  .footer__disclosure p { font-size: 0.82rem; line-height: 1.68; margin-bottom: 0.85rem; }
+
+  /* The meta row wrapped to three lines at 390px, costing 98px for three short
+     strings. Tighter, and "All rights reserved" is dropped — the © line already
+     asserts it, so it was 40px of pure boilerplate. */
+  .footer__meta {
+    gap: 0.6rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer__meta > .footer__metaItem:last-child {
+    display: none;
+  }
+}
+
+/* No wordmark font-size override anywhere — the measured cqw fit already scales
+   the line to whatever the viewport allows, and overriding it breaks the fit. */
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — no rise at all.
+
+   The panels return to normal flow and the container gives up its scroll
+   length, so the footer reads as an ordinary stacked footer. The effect is
+   removed rather than merely sped up, because a 200svh scroll that exists only
+   to drive an animation is itself the thing being opted out of.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  /* No rise, so nothing needs a backdrop. */
+  .footer-reveal__stage { background-image: none; }
+  .footer-reveal {
+    height: auto !important;
+  }
+
+  .footer-reveal__stage {
+    position: static;
+    height: auto;
+    overflow: visible;
+    background-image: none;
+  }
+
+  .footer-panel {
+    position: static;
+    inset: auto;
+    transform: none !important;
+    padding: 4rem var(--gutter);
+  }
+
+  .footer-panel--mark {
+    padding-bottom: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Too small to panelise — normal flow.
+
+   Mirrors PANEL_QUERY in Footer.jsx — the negation of
+   `(min-width: 768px) and (min-height: 700px)`.
+
+   Every phone lands here, plus any short window. On a phone the rise cost 591px
+   of scroll showing nothing but the backdrop; scrolling the footer normally is
+   both calmer and simpler.
+--------------------------------------------------------------------------- */
+
+@media (max-width: 767px), (max-height: 699px) {
+  .footer-reveal { height: auto !important; }
+  .footer-reveal__stage { position: static; height: auto; overflow: visible; }
+  .footer-panel {
+    position: static;
+    inset: auto;
+    transform: none !important;
+    padding: 3.5rem var(--gutter) 0;
+  }
+  .footer__main { flex: 0 1 auto; }
+}
+
+/* Same flattening, driven by the RUNTIME fit guard in Footer.jsx rather than by a
+   breakpoint — for when the content grew past the frame on a viewport the media
+   query thought was big enough. */
+.footer-reveal[data-flow] { height: auto !important; }
+.footer-reveal[data-flow] .footer-reveal__stage {
+  position: static;
+  height: auto;
+  overflow: visible;
+}
+.footer-reveal[data-flow] .footer-panel {
+  position: static;
+  inset: auto;
+  transform: none !important;
+}
+.footer-reveal[data-flow] .footer__main { flex: 0 1 auto; }
+
+/* ---------------------------------------------------------------------------
+   Filling the panel — gated on HEIGHT, then on width.
+
+   MUST STAY LAST IN THE FILE. These carry the same specificity as the
+   `max-width: 992px` block above, so placed earlier they simply lost the cascade
+   — the tablet reverted to 20% slack with the rules present but overridden.
+
+   The panel is always exactly one viewport. Slack therefore appears on TALL
+   screens, not wide ones: measured 24% at 1440x900, 28% at 1900x930 and 20% on an
+   820x1180 tablet, while 1024x768 had only 41px to spare. A single global clamp
+   cannot serve both — growing type enough to fill 930px would overflow 768px.
+
+   So growth is gated: vertical rhythm opens up only above 850px of height, and
+   type only above 1440px of width. 1024x768 matches neither and is left alone.
+--------------------------------------------------------------------------- */
+
+/* Wide AND tall — the 4-up layout, which has the most room to grow into. */
+@media (min-height: 850px) and (min-width: 993px) {
+  .footer-panel {
+    padding-top: clamp(4.5rem, 9vh, 8rem);
+    padding-bottom: clamp(2rem, 4vh, 3.5rem);
+  }
+
+  .footer__main {
+    gap: clamp(3rem, 6vh, 6rem) 3rem;
+  }
+
+  .footer__col {
+    gap: clamp(2rem, 5vh, 4rem);
+  }
+
+  .footer__colTitle {
+    margin-bottom: clamp(1.5rem, 4vh, 3rem);
+  }
+
+  .footer__list {
+    gap: clamp(1.3rem, 3.6vh, 2.8rem);
+  }
+
+  /* A grid item defaults to min-width:auto, so it refuses to shrink below its
+   longest unbreakable word — which is how one email address widened the track. */
+.footer__disclosure {
+  min-width: 0;
+}
+
+.footer__disclosure h4 {
+    margin-bottom: clamp(1.4rem, 3.2vh, 2.4rem);
+  }
+
+  .footer__disclosure p {
+    margin-bottom: clamp(1.1rem, 2.6vh, 2rem);
+    line-height: 1.92;
+  }
+
+  .footer__location {
+    margin-top: clamp(1.2rem, 2.6vh, 2rem);
+    font-size: 11px;
+  }
+
+  .footer__meta {
+    margin-bottom: clamp(2.75rem, 6vh, 5rem);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Tablet portrait (768-992px) deliberately has NO fill block.
+
+   It is at capacity. Two columns of links plus a four-paragraph risk disclosure
+   against a narrow panel leaves only ~101px of slack at 768x1024 — the worst case
+   in the range — and every attempt to spend it overflowed:
+
+     4.0vh list gaps  ->  195px OVER
+     2.95vh           ->   14px OVER
+
+   An absolutely positioned panel cannot scroll its overflow into view, so going
+   over does not mean "a bit tight", it means the bottom of the risk disclosure is
+   silently deleted. The base rhythm fits with real headroom, and the ~10-20% of
+   air that remains here is the cost of the content, not a styling oversight.
+   Removing it needs shorter copy, not tighter spacing.
+--------------------------------------------------------------------------- */
+
+/* Wide screens read at a bigger size — 16.6px links on a 1900px display is
+   laptop type on a monitor. */
+@media (min-width: 1440px) {
+  .footer__link { font-size: clamp(1.05rem, 0.72vw + 0.5rem, 1.45rem); }
+  .footer__colTitle { font-size: 11px; letter-spacing: 0.28em; }
+  /* A grid item defaults to min-width:auto, so it refuses to shrink below its
+   longest unbreakable word — which is how one email address widened the track. */
+.footer__disclosure {
+  min-width: 0;
+}
+
+.footer__disclosure h4 { font-size: clamp(1.15rem, 0.5vw + 0.6rem, 1.5rem); }
+  .footer__disclosure p { font-size: clamp(0.92rem, 0.42vw + 0.55rem, 1.12rem); }
+  .footer__social { width: 46px; height: 46px; }
+}

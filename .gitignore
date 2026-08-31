@@ -1,0 +1,58 @@
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# Environment.
+# .env.example IS tracked on purpose — it documents the contact-form variables
+# without carrying any values.
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# COMMENTS MUST BE ON THEIR OWN LINE.
+#
+# Git does not support trailing comments. A line written as
+#
+#     source-video/          # 28 MB of source MP4
+#
+# is read as a LITERAL pattern including the spaces and the comment text, so it
+# matches nothing at all. That is exactly how this file used to be written, and
+# it meant `source-video/` was never ignored — 28 MB of MP4 would have gone into
+# the first commit and stayed in history permanently. Confirmed with
+# `git check-ignore -v`, which reported the path as not ignored.
+#
+# If you add an entry here, put any explanation on the line above it.
+# ---------------------------------------------------------------------------
+
+# Heavy local-only inputs. The WebP frames in public/ are the shipped artefact;
+# these are the raw material they were cut from, plus the superseded originals.
+source-video/
+_old-ezgif-frames/
+
+# Source logo artwork (~2 MB of JPG). The site draws the mark as inline SVG in
+# ConvexMark.jsx, so nothing in the build reads these.
+assets-convex-funding-logo/
+
+# Design references kept on disk but never shipped or pushed — currently the type
+# specimen the Archivo decision was made from.
+_design/
+
+# Local AI tooling. None of it is needed to build, run or deploy the site.
+# NOTE: .claude/launch.json is deliberately NOT ignored — it is the dev-server
+# config and belongs in the repo.
+.agents/
+.claude/skills/
+skills-lock.json
+
+# Local handoff notes. Ignored rather than deleted: they are the only record of
+# the measured architecture decisions behind this build.
+PROJECT-STATE.md
+HANDOFF-NEXT-SESSION.md
+
+# Local Cloudflare/Wrangler emulator state, created by `wrangler pages dev`.
+# Regenerated on demand; nothing here belongs in the repo.
+.wrangler/

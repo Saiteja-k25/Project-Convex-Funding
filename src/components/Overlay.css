@@ -1,0 +1,382 @@
+/* ---------------------------------------------------------------------------
+   Overlay — text phases pinned above the canvas.
+   Every phase occupies the same sticky viewport box; only opacity separates
+   them, so the layout never reflows during scroll.
+--------------------------------------------------------------------------- */
+
+.overlay {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  margin-top: -100vh; /* sit on top of the canvas, which is also sticky */
+  z-index: 3;
+  pointer-events: none;
+}
+
+.overlay__phase {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 var(--gutter);
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+/* The footage is graded in the canvas itself now (see GRADE in config/sequence.js),
+   so these no longer carry the legibility load. What is left is a whisper of side
+   wash on the off-centre phases — far too light to read as a panel, just enough to
+   settle the small mono labels. The centre phases get nothing at all. */
+.overlay__phase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.overlay__phase--center {
+  align-items: center;
+  text-align: center;
+}
+
+.overlay__phase--left::before {
+  background: linear-gradient(
+    to right,
+    rgba(7, 11, 17, 0.34) 0%,
+    rgba(7, 11, 17, 0.16) 30%,
+    rgba(7, 11, 17, 0) 58%
+  );
+}
+
+.overlay__phase--right::before {
+  background: linear-gradient(
+    to left,
+    rgba(7, 11, 17, 0.34) 0%,
+    rgba(7, 11, 17, 0.16) 30%,
+    rgba(7, 11, 17, 0) 58%
+  );
+}
+
+/* Closing phase is left-aligned, so its CTA follows the text edge. */
+.overlay__phase--left .cta-row {
+  justify-content: flex-start;
+}
+
+.overlay__phase--left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.overlay__phase--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* --- display type --- */
+
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  color: var(--paper);
+  /* NOT text-wrap: balance — it re-flows lines after SplitText has split them.
+     'pretty' only tidies last-line orphans and is safe with splitting. */
+  text-wrap: pretty;
+  text-shadow: 0 1px 3px rgba(7, 11, 17, 0.5);
+  /* Stops per-character kerning shifting when the text is split into spans. */
+  font-kerning: none;
+  text-rendering: optimizeSpeed;
+}
+
+.display--xl {
+  font-size: clamp(2.7rem, 7.2vw, 6.2rem);
+}
+
+/* Three-line hero headline — sized down from --xl so it holds its line breaks
+   from 390px up to an ultrawide without becoming a wall of text. */
+.display--hero {
+  font-size: clamp(2.2rem, 6.2vw, 5.4rem);
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+
+.display--lg {
+  font-size: clamp(2.3rem, 5.6vw, 4.6rem);
+  letter-spacing: -0.014em;
+}
+
+.lede {
+  margin: 1.75rem 0 0 0;
+  max-width: 34ch;
+  font-size: clamp(1rem, 1.15vw, 1.06rem);
+  line-height: 1.62;
+  color: var(--lede);
+  text-wrap: pretty;
+  text-shadow: 0 1px 2px rgba(7, 11, 17, 0.55);
+}
+
+.overlay__phase--center .lede {
+  max-width: 46ch;
+}
+
+/* The positioning statement is a full paragraph, so it gets more measure than
+   the one-line ledes. Capped in ch so it stays readable on an ultrawide. */
+.overlay__phase--left .lede {
+  max-width: 52ch;
+}
+
+/* --- stats --- */
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.stat__label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.72rem, 0.82vw, 0.82rem);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--label);
+  text-shadow: 0 1px 2px rgba(7, 11, 17, 0.6);
+}
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.9vw, 3.3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--paper);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* --- CTA --- */
+
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 2.75rem;
+  pointer-events: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Pill button — the label NEVER MOVES.
+ *
+ * The previous version was ported from a shadcn reference: the label and an
+ * absolutely-positioned puck traded sides on hover, driven by swapping the
+ * left/right padding. It looked good and it was fragile, and it kept losing the
+ * label in production while measuring clean in isolation.
+ *
+ * The reason it is fragile: the whole illusion relies on the button's intrinsic
+ * width staying identical in both states, which only holds while the width is
+ * max-content and the total padding is unchanged. As soon as anything sets a
+ * width (the phone rule sets `width: 100%`) or the flex container constrains it,
+ * the label's position and the puck's `calc(100% - Npx)` travel no longer agree,
+ * and the label ends up somewhere it should not be.
+ *
+ * So the layout no longer animates AT ALL. The puck is a normal flex item pinned
+ * right with `margin-left: auto`, the label sits left, and hover moves only the
+ * arrow — a few pixels right, slowly, and it stops. Nothing can displace the
+ * label because nothing about the layout changes on hover.
+ */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 56px;
+  /* Right padding is just the puck's inset — the puck is in flow now. */
+  padding: 4px 4px 4px 28px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden; /* keeps the puck inside the pill's radius */
+  cursor: pointer;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.btn__label {
+  /* No transition, no transform, no repositioning. Deliberately inert. */
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.btn__icon {
+  /* margin-left:auto pins it to the right edge at ANY button width, including
+     width:100% on phones — no absolute positioning, no percentage maths. */
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* The entire hover effect: the arrow travels a few px right and stops. */
+.btn__icon svg {
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.btn:hover .btn__icon svg,
+.btn:focus-visible .btn__icon svg {
+  transform: translateX(6px);
+}
+
+.btn:active .btn__icon svg {
+  transform: translateX(2px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 3px;
+}
+
+/* --- variants --- */
+
+/* Label contrast: pure black at weight 800. #06231a was dark GREEN on green — a
+   same-hue pair that contrast ratio does not model, so 6.27:1 still read muddy.
+   Black is 8.1:1 with no hue relationship at all. The shadow keeps the pill
+   reading as a solid object over bright, busy footage. */
+.btn--primary {
+  background: var(--green);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.94rem;
+  letter-spacing: 0.015em;
+  box-shadow: 0 8px 28px rgba(7, 11, 17, 0.45);
+}
+
+.btn--primary .btn__icon {
+  background: var(--ink);
+  color: var(--mint);
+}
+
+/* Background does NOT change on hover: shifting it altered the label's contrast
+   between states, which is exactly what "visible on hover as in normal" rules
+   out. The arrow is the hover signal. */
+.btn--primary:hover {
+  box-shadow: 0 10px 34px rgba(7, 11, 17, 0.55);
+}
+
+.btn--ghost {
+  border-color: rgba(247, 249, 248, 0.18);
+  color: var(--paper);
+}
+
+.btn--ghost .btn__icon {
+  background: var(--green);
+  color: #06231a;
+}
+
+.btn--ghost:hover {
+  border-color: var(--green);
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive — scoped so desktop stays pixel-identical
+--------------------------------------------------------------------------- */
+
+@media (max-width: 992px) {
+  .stats {
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .overlay__phase--left,
+  .overlay__phase--right {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* The <br> tags set three tidy lines on desktop. On a 390px screen line one
+     wraps anyway, giving four ragged lines — so let the text wrap naturally. */
+  .display br {
+    display: none;
+  }
+
+  /* Cormorant is a high-contrast serif: its thin strokes lose weight at small
+     sizes on a dark ground, so mobile gets more size and more weight. */
+  .display {
+    font-weight: 700;
+  }
+
+  .display--hero {
+    font-size: clamp(2.6rem, 11vw, 3.4rem);
+    line-height: 1.04;
+  }
+
+  .display--lg {
+    font-size: clamp(2.4rem, 10vw, 3.1rem);
+    line-height: 1.05;
+  }
+
+  .stat__value {
+    font-size: clamp(2.1rem, 9vw, 2.8rem);
+  }
+
+  /* Portrait frames put the CONVEX FUNDING wordmark dead centre, where the
+     closing copy and its CTA were landing. Anchor this phase high instead. */
+  .overlay__phase--close {
+    justify-content: flex-start;
+    padding-top: 12vh;
+  }
+
+  /* Text moved to the left edge, so the wash follows it. */
+  .overlay__phase--right::before {
+    background: linear-gradient(
+      to right,
+      rgba(7, 11, 17, 0.34) 0%,
+      rgba(7, 11, 17, 0.16) 30%,
+      rgba(7, 11, 17, 0) 58%
+    );
+  }
+
+  .cta-row {
+    justify-content: flex-start;
+  }
+
+  .lede,
+  .overlay__phase--center .lede {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Full width on a phone. The puck stays pinned right by margin-left:auto, so
+     unlike the old padding-swap version this needs no hover overrides at all. */
+  .btn {
+    width: 100%;
+    padding: 6px 6px 6px 24px;
+  }
+
+  .btn__icon {
+    width: 44px;
+    height: 44px;
+  }
+}
+

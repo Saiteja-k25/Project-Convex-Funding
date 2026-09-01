@@ -8,6 +8,74 @@
       name="description"
       content="Convex Funding is a proprietary trading firm dedicated to empowering talented traders with access to capital, professional trading opportunities, and a clear path to growth."
     />
+
+    <!-- Icons.
+         SVG first: modern browsers prefer it and it stays crisp at every size.
+         The 32px PNG is the fallback for browsers that ignore SVG favicons.
+         apple-touch-icon is full-bleed with square corners on purpose — iOS
+         applies its own rounded mask, and a pre-rounded icon leaves the home
+         screen showing through the corners. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#070B11" />
+
+    <!-- ===================================================================
+         ABSOLUTE URLs — four lines, and they must all change together:
+         canonical, og:url, og:image, twitter:image.
+
+         They point at the CURRENT live host. Social scrapers (WhatsApp,
+         LinkedIn, Slack, X, iMessage) do not resolve relative image paths, so
+         og:image has to name a host that actually answers. Pointing it at a
+         domain that is not attached yet produces no preview image at all —
+         which is why these track the workers.dev URL rather than the intended
+         brand domain.
+
+         WHEN convexfunding.com IS ATTACHED: change all four to
+         https://convexfunding.com/... The canonical one matters most — leaving
+         it on workers.dev once a custom domain is live tells search engines the
+         workers.dev copy is the original, and splits ranking between the two.
+         =================================================================== -->
+    <link rel="canonical" href="https://project-convex-funding.info69k.workers.dev/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Convex Funding" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://project-convex-funding.info69k.workers.dev/" />
+    <meta
+      property="og:title"
+      content="Convex Funding: Empowering Traders with Capital, Opportunity, and Growth"
+    />
+    <!-- Shorter than the meta description above on purpose: cards truncate around
+         160 characters, and a sentence cut mid-word reads as broken. -->
+    <meta
+      property="og:description"
+      content="A proprietary trading firm backing talented traders with capital, professional trading opportunities, and a clear path to growth."
+    />
+    <meta property="og:image" content="https://project-convex-funding.info69k.workers.dev/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Convex Funding — Empowering traders with capital, opportunity, and growth."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Convex Funding: Empowering Traders with Capital, Opportunity, and Growth"
+    />
+    <meta
+      name="twitter:description"
+      content="A proprietary trading firm backing talented traders with capital, professional trading opportunities, and a clear path to growth."
+    />
+    <meta name="twitter:image" content="https://project-convex-funding.info69k.workers.dev/og-image.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Convex Funding — Empowering traders with capital, opportunity, and growth."
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

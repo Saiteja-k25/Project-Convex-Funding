@@ -8,7 +8,7 @@ import { MapPin } from 'lucide-react';
 import { BRAND_ICONS } from './BrandIcons';
 import { useFitText } from '../lib/useFitText';
 import { useScroll } from '../lib/ScrollProvider';
-import { CONTACT, CREDIT, FOOTER_COLUMNS, SITE, SOCIALS } from '../data/site';
+import { CONTACT, FOOTER_COLUMNS, SITE, SOCIALS } from '../data/site';
 import './Footer.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -303,17 +303,6 @@ export default function Footer() {
               <span className="footer__metaItem">
                 &copy; {SITE.year} {SITE.name}
               </span>
-              {/* A byline, not navigation — a link with no link affordances. */}
-              <a
-                className="footer__credit"
-                href={CREDIT.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${CREDIT.prefix} ${CREDIT.name} — opens portfolio in a new tab`}
-              >
-                <span className="footer__creditPrefix">{CREDIT.prefix}</span>
-                <span className="footer__creditWord">{CREDIT.name}</span>
-              </a>
               <span className="footer__metaItem">All rights reserved</span>
             </div>
 

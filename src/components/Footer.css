@@ -296,54 +296,6 @@
 .footer__metaItem a { color: var(--muted); text-decoration: none; }
 .footer__metaItem a:hover { color: var(--mint); }
 
-/* --- credit byline ---
-   Deliberately carries no link affordances: no underline, no link colour, no
-   pointer-ish styling beyond the cursor. The name sits in solid pills so it
-   reads as a wordmark that happens to be clickable. */
-
-.footer__credit {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.footer__creditPrefix {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  transition: color 0.25s ease;
-}
-
-.footer__creditWord {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  /* Ink on green: a neutral-on-hue pair, so it stays crisp at 10.5px where a
-     dark green would go muddy — same reasoning as the CTA label. */
-  color: var(--ink);
-  background: var(--green);
-  border-radius: 999px;
-  padding: 0.34rem 0.75rem 0.3rem;
-  white-space: nowrap;
-  transition: background-color 0.25s ease, transform 0.25s ease;
-}
-
-.footer__credit:hover .footer__creditPrefix { color: var(--muted-bright); }
-.footer__credit:hover .footer__creditWord { background: var(--mint); }
-
-.footer__credit:focus-visible {
-  outline: 2px solid var(--mint);
-  outline-offset: 4px;
-  border-radius: 999px;
-}
-
 /* The measuring box. useFitText reads THIS width and sizes the span to match it
    exactly, so the wordmark spans the column edge-to-edge on a phone, a tablet, a
    laptop and an ultrawide alike.

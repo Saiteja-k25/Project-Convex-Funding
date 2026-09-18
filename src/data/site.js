@@ -193,19 +193,6 @@ export const METRICS = [
   { label: 'Pass rate', value: '31.4%', note: 'published, not marketed' },
 ];
 
-/**
- * Footer credit. Rendered as solid pills rather than an underlined anchor: it is
- * a byline that happens to be clickable, so it should read as a wordmark, not as
- * navigation.
- */
-export const CREDIT = {
-  prefix: 'Created by',
-  // One string, one pill. Splitting the name across two bubbles read as two
-  // separate tags rather than one person's name.
-  name: 'Kurapati Sai Teja',
-  link: 'https://portfolio-ks-beta.vercel.app/',
-};
-
 export const SITE = {
   name: 'Convex Funding',
   domain: 'convexfunding.com',

@@ -67,8 +67,8 @@
 }
 
 /* Nothing about the lockup changes on hover — it is a wordmark that happens to
-   be clickable, the same reasoning as the footer credit pill. Without this the
-   global `a:hover` would tint it green. */
+   be clickable, not navigation, so it carries no link affordances. Without this
+   the global `a:hover` would tint it green. */
 .nav-home:hover,
 .nav-home:focus {
   color: inherit;
